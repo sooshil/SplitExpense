@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Split Expense</string>
+    <string name="navigation_drawer_open">Open Navigation Drawer</string>
+    <string name="navigation_drawer_close">Close Navigation Drawer</string>
+    <string name="login">Login</string>
+    <string name="phone">Phone:</string>
+    <string name="password">Password:</string>
+    <string name="not_registered_yet">Not registered yet? Register Now!</string>
+    <string name="register">Register</string>
+    <string name="first_name">First Name:</string>
+    <string name="last_name">Last Name:</string>
+    <string name="email">Email:</string>
+    <string name="password_requrement_text">Password must be at least 8 characters long and must contain: \n At least one upper case letter \n At least lower case letter \n At least one number \n At least one special character.</string>
+    <string name="confirm_password">Confirm Password:</string>
+    <string name="gender">Gender:</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="already_registered">Already registered? Login Now!</string>
+    <string name="logout">Logout</string>
+    <string name="signup_successful">Sign up was successful…</string>
+    <string name="signup_failed">There was an error. Signup Failed…</string>
+    <string name="password_is_not_valid">Password is not valid</string>
+    <string name="password_doesnt_match">Two password doesn\'t match</string>
+    <string name="phone_requirement_invalid">Phone number must be 10 characters long.</string>
+    <string name="enter_valid_email">Please enter valid email</string>
+    <string name="enter_value_in_all_fields">Please enter value in all fields</string>
+    <string name="username_exists">Username already exists. Please choose different username.</string>
+    <string name="generate_code"><u>Generate Code</u></string>
+</resources>

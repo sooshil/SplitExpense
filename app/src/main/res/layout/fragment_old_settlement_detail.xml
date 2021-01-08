@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="15dp"
+    android:background="@color/backgroundGray">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonToDisplayDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="Monday, 30 November 2020"
+        />
+
+    <TextView
+        android:id="@+id/textViewTotalExpense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Total Expense: $456.96"
+        android:paddingVertical="10dp"
+        app:layout_constraintTop_toBottomOf="@id/buttonToDisplayDate"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/textViewAverageExpense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Average Expense: $158.23"
+        android:paddingVertical="10dp"
+        app:layout_constraintTop_toBottomOf="@id/textViewTotalExpense"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerSettleDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/textViewAverageExpense"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:listitem="@layout/settle_detail_list_item"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

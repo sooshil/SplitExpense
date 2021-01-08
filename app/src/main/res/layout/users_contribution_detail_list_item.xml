@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginVertical="2dp"
+    android:background="@drawable/rounded_rectangle_holo"
+    android:elevation="@dimen/cardview_compat_inset_shadow"
+    tools:context="com.sukajee.splitexpense.ui.details.UsersContributionDetailsFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="12dp">
+
+        <TextView
+            android:id="@+id/textViewStore"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="5dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Walmart Supercenter"
+            android:textColor="@color/colorAccent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewTransactionDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="12/25/2020"
+            android:textSize="12sp"
+            android:paddingHorizontal="5dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/colorAccent"
+            app:layout_constraintStart_toStartOf="@id/textViewStore"
+            app:layout_constraintEnd_toEndOf="@id/textViewStore"
+            app:layout_constraintTop_toBottomOf="@id/textViewStore"/>
+
+        <TextView
+            android:id="@+id/textViewDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Groceries"
+            android:textSize="12sp"
+            android:paddingStart="20dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/colorAccent"
+            app:layout_constraintStart_toEndOf="@id/textViewStore"
+            app:layout_constraintTop_toTopOf="@id/textViewStore"
+            app:layout_constraintBottom_toBottomOf="@id/textViewTransactionDate"/>
+
+        <TextView
+            android:id="@+id/textViewAmount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="$112.56"
+            android:textSize="14sp"
+            android:paddingStart="15dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/jura"
+            android:textColor="@color/colorAccent"
+            android:maxLines="1"
+            app:layout_constraintTop_toTopOf="@id/textViewStore"
+            app:layout_constraintBottom_toBottomOf="@id/textViewTransactionDate"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

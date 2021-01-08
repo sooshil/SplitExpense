@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/backgroundGray"
+    android:padding="10dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"        >
+
+    <TextView
+        android:id="@+id/textViewSettlementResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="20dp"
+        android:text="Settlement Result"
+        android:textSize="20sp"
+        android:textColor="@color/colorAccent"/>
+
+
+    <TextView
+        android:id="@+id/textViewAverageExpense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/textViewSettlementResult"
+        android:padding="10dp"
+        android:text="Average Expense: "
+        android:textSize="14sp"
+        android:textColor="@color/colorAccent"/>
+    
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerSettleDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        app:layout_constraintTop_toBottomOf="@id/textViewAverageExpense"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:listitem="@layout/settle_detail_list_item"/>
+
+    <Button
+        android:id="@+id/buttonDone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="Done"
+        app:layout_constraintTop_toBottomOf="@id/recyclerSettleDetail"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <Button
+        android:id="@+id/buttonSeePreviousSettlements"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="See Previous Settlements"
+        app:layout_constraintTop_toBottomOf="@id/buttonDone"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

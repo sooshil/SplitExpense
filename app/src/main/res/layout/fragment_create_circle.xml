@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundGray"
+    android:padding="15dp"
+    tools:context="com.sukajee.splitexpense.CreateCircleFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/textViewHelloFirstName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:gravity="start"
+            android:text="Hello firstName"
+            android:textColor="@color/colorAccent"
+            android:textSize="30sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewWelcomeToTeam"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:text="Welcome to Split Expense"
+            android:textColor="@color/colorAccent"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewHelloFirstName" />
+
+        <TextView
+            android:id="@+id/textViewEnterCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:gravity="start"
+            android:text="Please create an invitation code.\You
+can also click on 'Generate Code' to automatically generate an invitation code.\nShare this invitation code to your expense sharing circle."
+            android:textColor="@color/colorAccent"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewWelcomeToTeam" />
+
+        <EditText
+            android:id="@+id/editTextGenerateCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="10dp"
+            android:text="@string/generate_code"
+            android:textColor="@color/colorAccent"
+            android:textSize="10dp"
+            app:layout_constraintBottom_toTopOf="@id/editTextCircleCodeInput"
+            app:layout_constraintEnd_toEndOf="@id/editTextCircleCodeInput"
+            app:layout_constraintTop_toBottomOf="@id/textViewEnterCode" />
+
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextCircleCodeInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYX0123456789"
+            android:hint="Invitation Code (example: P6MQ7R)"
+            android:inputType="text"
+            android:maxLength="6"
+            android:maxLines="1"
+            android:padding="12dp"
+            android:textColorHint="@color/colorPrimary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/editTextGenerateCode" />
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonCreateCircle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/button_rounded"
+            android:text="Create Circle"
+            android:textColor="@color/colorWhite"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/editTextCircleCodeInput" />
+
+        <ProgressBar
+            android:id="@+id/progressBarCircular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
