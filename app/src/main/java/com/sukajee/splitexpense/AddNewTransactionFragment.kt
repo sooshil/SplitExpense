@@ -82,7 +82,7 @@ class AddNewTransactionFragment : Fragment(R.layout.fragment_add_new_transaction
                 userReference.child(user.uid)
                         .addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
-                                circleCode = snapshot.child("circleCode").toString()
+                                circleCode = snapshot.child("circleCode").key.toString()
                                 val transaction = Transaction(user.uid, currentMilli, date, circleCode, description, storeName, amount, note)
                                 val ref = transactionReference.child(date.toString())
                                 ref.setValue(transaction)

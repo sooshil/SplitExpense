@@ -1,3 +1,3 @@
 package com.sukajee.splitexpense.data
 
-data class UsersContribution(val usersName: String, val amount: String)
+data class UsersContribution(val usersName: String, val amount: String, val percentage: Float)

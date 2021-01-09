@@ -20,7 +20,8 @@ class AllUserContributionsAdapter(private val contributionList: List<UsersContri
         val currentItem = contributionList[position]
 
         holder.userName.text = currentItem.usersName
-        holder.contributionAmount.text = currentItem.amount
+
+        holder.contributionAmount.text = "${currentItem.amount} (${currentItem.percentage}%)"
     }
 
     override fun getItemCount() = contributionList.size

@@ -13,7 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="15dp"
-        android:text="All User's Contributions"
+        android:text="All Members's Contributions"
+        android:fontFamily="@font/overlock"
+        android:textSize="20sp"
+
         android:textColor="@color/colorAccent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

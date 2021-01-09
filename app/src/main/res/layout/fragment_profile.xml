@@ -70,9 +70,9 @@
                         android:background="@drawable/rounded_rectangle_holo"
                         android:fontFamily="@font/jura_light"
                         android:padding="10dp"
-                        android:paddingStart="50dp"
-                        android:paddingEnd="50dp"
-                        android:text="$0.00"
+                        android:paddingStart="30dp"
+                        android:paddingEnd="30dp"
+                        android:text="$0.00 (0.00%)"
                         android:textColor="@color/colorAccent"
                         android:textSize="40sp" />
                 </LinearLayout>
