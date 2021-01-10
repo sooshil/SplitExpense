@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -21,6 +20,7 @@ import com.google.firebase.database.*
 import com.sukajee.splitexpense.DrawerLocker
 import com.sukajee.splitexpense.R
 import com.sukajee.splitexpense.data.UsersContribution
+import com.sukajee.splitexpense.util.LAST_SETTLEMENT_DATE
 import kotlinx.android.synthetic.main.fragment_profile.*
 import java.text.DateFormat
 import java.util.*
@@ -73,13 +73,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     override fun onStart() {
         super.onStart()
 
-        if(FirebaseAuth.getInstance().currentUser == null) {
+        if (FirebaseAuth.getInstance().currentUser == null) {
             findNavController().navigate(R.id.loginFragment)
         }
         FirebaseDatabase.getInstance().reference.child("users")
-                .child(FirebaseAuth.getInstance().currentUser!!.uid).addListenerForSingleValueEvent(object: ValueEventListener{
+                .child(FirebaseAuth.getInstance().currentUser!!.uid).addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        if(snapshot.child("circleCode").value.toString().isEmpty() || snapshot.child("circleCode").value.toString() == "") {
+                        if (snapshot.child("circleCode").value.toString().isEmpty() || snapshot.child("circleCode").value.toString() == "") {
                             findNavController().navigate(R.id.joinCreateCircleFragment)
                             return
                         }
@@ -146,17 +146,15 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     var totalAmount = 0.0F
                     for (date in snapshot.children) {
-                        if (date.key!!.toLong() > dateLastSettlement) {
-                            if(circleCode != null) {
-                                if(circleCode ==  date.child("circleCode").getValue().toString()) {
+                        if (date.key!!.toLong() > LAST_SETTLEMENT_DATE) {
+                            if (circleCode != null) {
+                                if (circleCode == date.child("circleCode").getValue().toString()) {
                                     if (date.child("userId").getValue().toString() == user.uid) {
                                         val amount = date.child("amount").getValue().toString()
                                         val floatAmount = amount.toFloat()
                                         totalAmount += floatAmount
                                     }
                                 }
-                            } else {
-
                             }
                         }
                     }
@@ -167,7 +165,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                         percentageFloat = roundIt(percentage).toFloat()
                         val displayText = "$$displayAmount ($percentageFloat%)"
                         val ss = SpannableString(displayText)
-                        ss.setSpan(AbsoluteSizeSpan(20, true), ss.indexOf("(", 0,false), ss.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        ss.setSpan(AbsoluteSizeSpan(20, true), ss.indexOf("(", 0, false), ss.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 
                         textViewUsersContribution.text = ss
                     } else {
@@ -191,7 +189,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     var totalAmount = 0.0F
                     allUsersTotalContribution = 0.0F
                     for (date in snapshot.children) {
-                        if (date.key!!.toLong() > dateLastSettlement) {
+                        if (date.key!!.toLong() > LAST_SETTLEMENT_DATE) {
                             if (circleCode != null) {
                                 if (circleCode == date.child("circleCode").getValue().toString()) {
                                     val userString = date.child("userId").getValue().toString()
@@ -216,7 +214,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     }
 
 
-                    //Display User's first and last name in recuclerview
+                    //Display User's first and last name in recyclerview
                     for (userKeys in contributedUserMap) {
                         userNameReference = dbRefUser.child(userKeys.key)
                         var fullName: String
@@ -228,20 +226,21 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                                 fullName = "${snapshot.child("firstName").value.toString()} ${snapshot.child("lastName").value.toString()}"
                                 usersContributionList.add(UsersContribution(fullName, amount.toString(), toFloat.toFloat()))
 
-                                recyclerOthersContribution.adapter = AllUserContributionsAdapter(usersContributionList)
-                                recyclerOthersContribution.layoutManager = LinearLayoutManager(requireContext())
-                                recyclerOthersContribution.setHasFixedSize(true)
+                                recyclerOthersContribution.adapter?.notifyDataSetChanged()
                             }
 
                             override fun onCancelled(error: DatabaseError) {
                                 TODO("Not yet implemented")
                             }
                         })
+                        if (recyclerOthersContribution.adapter?.itemCount == 0) {
+                            textViewNoOtherUsers.visibility = View.VISIBLE
+                        }
+                    }
 
-                    }
-                    if (recyclerOthersContribution.adapter?.itemCount == 0) {
-                        textViewNoOtherUsers.visibility = View.VISIBLE
-                    }
+                    recyclerOthersContribution.adapter = AllUserContributionsAdapter(usersContributionList)
+                    recyclerOthersContribution.layoutManager = LinearLayoutManager(requireContext())
+                    recyclerOthersContribution.setHasFixedSize(true)
 
                     if (allUsersTotalContribution != 0.0F) {
                         val percentage = (displayAmount.toFloat() * 100) / allUsersTotalContribution
@@ -269,10 +268,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         fabAddTransaction.setOnClickListener {
             val action = ProfileFragmentDirections.actionProfileFragmentToAddNewTransactionFragment()
             findNavController().navigate(action)
-        }
-
-        textViewSeeAll.setOnClickListener {
-
         }
     }
 

@@ -5,9 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backgroundGray"
-    android:padding="20dp"
     tools:context="com.sukajee.splitexpense.ui.profile.ProfileFragment">
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddTransaction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:elevation="5dp"
+        android:src="@drawable/ic_add"
+        app:maxImageSize="32dp"
+        android:layout_margin="16dp"
+        android:contentDescription="Add New Transaction" />
+
+    <ProgressBar
+        android:id="@+id/progressBarCircular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -55,7 +72,7 @@
                         android:background="#236123"
                         android:fontFamily="@font/overlock"
                         android:gravity="center_horizontal"
-                        android:padding="4dp"
+                        android:padding="10dp"
                         android:text="Your Contribution as of Date Time"
                         android:textColor="@color/colorWhite"
                         android:textSize="18sp" />
@@ -87,19 +104,20 @@
                 android:background="#236123"
                 android:fontFamily="@font/overlock"
                 android:padding="10sp"
+                android:paddingStart="16dp"
                 android:text="Other's Contributions"
                 android:textColor="@color/colorWhite"
                 android:textSize="18sp"
+                android:gravity="center"
                 app:layout_constraintBottom_toTopOf="@id/recyclerOthersContribution"
-                app:layout_constraintEnd_toStartOf="@id/cardViewSeeAll"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cardViewYourContribution" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerOthersContribution"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:maxHeight="200dp"
+                android:layout_height="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -122,51 +140,6 @@
                 app:layout_constraintStart_toStartOf="@id/recyclerOthersContribution"
                 app:layout_constraintTop_toTopOf="@id/recyclerOthersContribution" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardViewSeeAll"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:elevation="0dp"
-                app:cardBackgroundColor="#236123"
-                app:cardCornerRadius="0dp"
-                app:layout_constraintBottom_toBottomOf="@id/textViewOthersContributions"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/textViewOthersContributions">
-
-                <TextView
-                    android:id="@+id/textViewSeeAll"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/rounded_rectangle_filled"
-                    android:fontFamily="@font/overlock"
-                    android:padding="6dp"
-                    android:text="See All ..."
-                    android:textColor="#236123"
-                    android:textSize="18sp"
-
-                    />
-            </androidx.cardview.widget.CardView>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAddTransaction"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:elevation="5dp"
-        android:src="@drawable/ic_add"
-        app:maxImageSize="32dp" />
-
-    <ProgressBar
-        android:id="@+id/progressBarCircular"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        tools:visibility="visible" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
