@@ -37,7 +37,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private lateinit var textViewUsersContribution: TextView
     private var usersContributionList: MutableList<UsersContribution> = ArrayList()
     private lateinit var recyclerOthersContribution: RecyclerView
-    private val dateLastSettlement: Long = 1608768000000
     private var contributedUserMap: MutableMap<String, Float> = hashMapOf()
     private lateinit var greetingMessage: String
     private lateinit var userNameReference: DatabaseReference
@@ -66,9 +65,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             }
         }
         greetingMessage = getGreetingMessage()
+
         return view
     }
-
 
     override fun onStart() {
         super.onStart()
@@ -91,7 +90,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
                 })
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -116,7 +114,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         val user = firebaseAuth.currentUser
         var circleCode: String? = null
         if (user != null) {
-            val userReferenceListener = object : ValueEventListener {
+
+            dbRefUser.child(user.uid).addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     circleCode = snapshot.child("circleCode").value.toString()
                     val firstName = snapshot.child("firstName").value.toString()
@@ -130,134 +129,133 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                         val action = ProfileFragmentDirections.actionProfileFragmentToJoinCreateCircleFragment(firstName)
                         findNavController().navigate(action)
                     }
-                }
 
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-            }
-            val userIdReference = dbRefUser.child(user.uid)
-            userIdReference.keepSynced(true)
-            userIdReference.addValueEventListener(userReferenceListener)
+                    /*
+                *********************************************************************************************************
+                *************************************** euta bhitra bata arko call gareko********************************
+                *********************************************************************************************************
+                 */
 
-
-            //Contribution Amount Display
-            val transactionReferenceListener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    var totalAmount = 0.0F
-                    for (date in snapshot.children) {
-                        if (date.key!!.toLong() > LAST_SETTLEMENT_DATE) {
-                            if (circleCode != null) {
-                                if (circleCode == date.child("circleCode").getValue().toString()) {
-                                    if (date.child("userId").getValue().toString() == user.uid) {
-                                        val amount = date.child("amount").getValue().toString()
-                                        val floatAmount = amount.toFloat()
-                                        totalAmount += floatAmount
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    displayAmount = roundIt(totalAmount)
-                    var percentageFloat = 0.0F
-                    if (allUsersTotalContribution != 0.0F) {
-                        val percentage = (displayAmount.toFloat() * 100) / allUsersTotalContribution
-                        percentageFloat = roundIt(percentage).toFloat()
-                        val displayText = "$$displayAmount ($percentageFloat%)"
-                        val ss = SpannableString(displayText)
-                        ss.setSpan(AbsoluteSizeSpan(20, true), ss.indexOf("(", 0, false), ss.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-                        textViewUsersContribution.text = ss
-                    } else {
-                        textViewUsersContribution.text = "$$displayAmount"
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-            }
-            dbRefTransactions.addValueEventListener(transactionReferenceListener)
-            dbRefTransactions.keepSynced(true)
-
-            //All User's Contribution RecyclerView
-            dbRefTransactions.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    usersContributionList.clear()
-                    contributedUserMap.clear()
-                    var countOtherUsers = 0
-                    var totalAmount = 0.0F
-                    allUsersTotalContribution = 0.0F
-                    for (date in snapshot.children) {
-                        if (date.key!!.toLong() > LAST_SETTLEMENT_DATE) {
-                            if (circleCode != null) {
-                                if (circleCode == date.child("circleCode").getValue().toString()) {
-                                    val userString = date.child("userId").getValue().toString()
-                                    if (userString != user.uid) {
-                                        countOtherUsers++
-                                        val amount = date.child("amount").getValue().toString()
-                                        if (contributedUserMap.containsKey(userString)) {
-                                            val oldAmount = contributedUserMap[userString]
-                                            totalAmount = oldAmount!!.toFloat() + amount.toFloat()
-                                        } else {
-                                            totalAmount += amount.toFloat()
+                    dbRefTransactions.addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            var totalAmount = 0.0F
+                            for (date in snapshot.children) {
+                                if (date.key!!.toLong() > LAST_SETTLEMENT_DATE) {
+                                    if (circleCode != null) {
+                                        if (circleCode == date.child("circleCode").getValue().toString()) {
+                                            if (date.child("userId").getValue().toString() == user.uid) {
+                                                val amount = date.child("amount").getValue().toString()
+                                                val floatAmount = amount.toFloat()
+                                                totalAmount += floatAmount
+                                            }
                                         }
-                                        contributedUserMap.put(userString, totalAmount)
-                                        totalAmount = 0.0F
                                     }
-                                    val amountX = date.child("amount").getValue().toString()
-                                    val amountXFloat = amountX.toFloat()
-                                    allUsersTotalContribution += amountXFloat
                                 }
                             }
-                        }
-                    }
+                            displayAmount = roundIt(totalAmount)
+                            var percentageFloat = 0.0F
+                            if (allUsersTotalContribution != 0.0F) {
+                                val percentage = (displayAmount.toFloat() * 100) / allUsersTotalContribution
+                                percentageFloat = roundIt(percentage).toFloat()
+                                val displayText = "$$displayAmount ($percentageFloat%)"
+                                val ss = SpannableString(displayText)
+                                ss.setSpan(AbsoluteSizeSpan(20, true), ss.indexOf("(", 0, false), ss.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-
-                    //Display User's first and last name in recyclerview
-                    for (userKeys in contributedUserMap) {
-                        userNameReference = dbRefUser.child(userKeys.key)
-                        var fullName: String
-                        userNameReference.addValueEventListener(object : ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                val amount = userKeys.value
-                                val percentageContribution: Float = (amount * 100) / allUsersTotalContribution
-                                val toFloat = roundIt(percentageContribution)
-                                fullName = "${snapshot.child("firstName").value.toString()} ${snapshot.child("lastName").value.toString()}"
-                                usersContributionList.add(UsersContribution(fullName, amount.toString(), toFloat.toFloat()))
-
-                                recyclerOthersContribution.adapter?.notifyDataSetChanged()
+                                textViewUsersContribution.text = ss
+                            } else {
+                                textViewUsersContribution.text = "$$displayAmount"
                             }
 
-                            override fun onCancelled(error: DatabaseError) {
-                                TODO("Not yet implemented")
-                            }
-                        })
-                        if (recyclerOthersContribution.adapter?.itemCount == 0) {
-                            textViewNoOtherUsers.visibility = View.VISIBLE
+
+
+                            //All User's Contribution RecyclerView
+                            dbRefTransactions.addValueEventListener(object : ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    usersContributionList.clear()
+                                    contributedUserMap.clear()
+                                    var countOtherUsers = 0
+                                    var totalAmount = 0.0F
+                                    allUsersTotalContribution = 0.0F
+                                    for (date in snapshot.children) {
+                                        if (date.key!!.toLong() > LAST_SETTLEMENT_DATE) {
+                                            if (circleCode != null) {
+                                                if (circleCode == date.child("circleCode").getValue().toString()) {
+                                                    val userString = date.child("userId").getValue().toString()
+                                                    if (userString != user.uid) {
+                                                        countOtherUsers++
+                                                        val amount = date.child("amount").getValue().toString()
+                                                        if (contributedUserMap.containsKey(userString)) {
+                                                            val oldAmount = contributedUserMap[userString]
+                                                            totalAmount = oldAmount!!.toFloat() + amount.toFloat()
+                                                        } else {
+                                                            totalAmount += amount.toFloat()
+                                                        }
+                                                        contributedUserMap.put(userString, totalAmount)
+                                                        totalAmount = 0.0F
+                                                    }
+                                                    val amountX = date.child("amount").getValue().toString()
+                                                    val amountXFloat = amountX.toFloat()
+                                                    allUsersTotalContribution += amountXFloat
+                                                }
+                                            }
+                                        }
+                                    }
+                                    //Display User's first and last name in recyclerview
+                                    for (userKeys in contributedUserMap) {
+                                        userNameReference = dbRefUser.child(userKeys.key)
+                                        var fullName: String
+                                        userNameReference.addValueEventListener(object : ValueEventListener {
+                                            override fun onDataChange(snapshot: DataSnapshot) {
+                                                val amount = userKeys.value
+                                                val percentageContribution: Float = (amount * 100) / allUsersTotalContribution
+                                                val toFloat = roundIt(percentageContribution)
+                                                fullName = "${snapshot.child("firstName").value.toString()} ${snapshot.child("lastName").value.toString()}"
+                                                usersContributionList.add(UsersContribution(fullName, amount.toString(), toFloat.toFloat()))
+
+                                                recyclerOthersContribution.adapter?.notifyDataSetChanged()
+                                            }
+
+                                            override fun onCancelled(error: DatabaseError) {
+                                                TODO("Not yet implemented")
+                                            }
+                                        })
+                                    }
+                                    if(contributedUserMap.isEmpty()) {
+                                        textViewNoOtherUsers.visibility = View.VISIBLE
+                                    }
+                                    recyclerOthersContribution.adapter = AllUserContributionsAdapter(usersContributionList)
+                                    recyclerOthersContribution.layoutManager = LinearLayoutManager(requireContext())
+                                    recyclerOthersContribution.setHasFixedSize(true)
+
+                                    if (allUsersTotalContribution != 0.0F) {
+                                        val percentage = (displayAmount.toFloat() * 100) / allUsersTotalContribution
+                                        val percentageFloat = roundIt(percentage).toFloat()
+                                        val displayText = "$$displayAmount ($percentageFloat%)"
+                                        val ss = SpannableString(displayText)
+                                        ss.setSpan(AbsoluteSizeSpan(20, true), ss.indexOf("(", 0, false), ss.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+                                        textViewUsersContribution.text = ss
+                                    } else {
+                                        textViewUsersContribution.text = "$$displayAmount"
+                                    }
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                    TODO("Not yet implemented")
+                                }
+                            })
                         }
-                    }
 
-                    recyclerOthersContribution.adapter = AllUserContributionsAdapter(usersContributionList)
-                    recyclerOthersContribution.layoutManager = LinearLayoutManager(requireContext())
-                    recyclerOthersContribution.setHasFixedSize(true)
-
-                    if (allUsersTotalContribution != 0.0F) {
-                        val percentage = (displayAmount.toFloat() * 100) / allUsersTotalContribution
-                        val percentageFloat = roundIt(percentage).toFloat()
-                        val displayText = "$$displayAmount ($percentageFloat%)"
-                        val ss = SpannableString(displayText)
-                        ss.setSpan(AbsoluteSizeSpan(20, true), ss.indexOf("(", 0, false), ss.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-                        textViewUsersContribution.text = ss
-                    } else {
-                        textViewUsersContribution.text = "$$displayAmount"
-                    }
+                        override fun onCancelled(error: DatabaseError) {
+                            TODO("Not yet implemented")
+                        }
+                    })
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                     TODO("Not yet implemented")
                 }
+
             })
 
         } else {

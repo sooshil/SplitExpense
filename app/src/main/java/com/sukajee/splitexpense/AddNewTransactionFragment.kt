@@ -105,6 +105,7 @@ class AddNewTransactionFragment : Fragment(R.layout.fragment_add_new_transaction
             }
             lastClickTime = SystemClock.elapsedRealtime()
 
+            //mDatePicker.getDatePicker().setMaxDate(System.currentTimeMillis());
             val newFragment = DatePickerFragment()
             newFragment.show(childFragmentManager, "datePicker")
         }
