@@ -8,7 +8,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -41,11 +43,15 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private lateinit var userNameReference: DatabaseReference
     private var allUsersTotalContribution: Float = 0.0F
     private lateinit var displayAmount: String
+    private lateinit var textViewNoOtherUsers: TextView
+    private lateinit var progressBarCircular: ProgressBar
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
 
+        textViewNoOtherUsers = view.findViewById(R.id.textViewNoOtherUsers)
         recyclerOthersContribution = view.findViewById(R.id.recyclerOthersContribution)
+        progressBarCircular = view.findViewById(R.id.progressBarCircular)
 
         fun getGreetingMessage(): String {
             val c = Calendar.getInstance()
@@ -63,6 +69,30 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         return view
     }
 
+
+    override fun onStart() {
+        super.onStart()
+
+        if(FirebaseAuth.getInstance().currentUser == null) {
+            findNavController().navigate(R.id.loginFragment)
+        }
+        FirebaseDatabase.getInstance().reference.child("users")
+                .child(FirebaseAuth.getInstance().currentUser!!.uid).addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if(snapshot.child("circleCode").value.toString().isEmpty() || snapshot.child("circleCode").value.toString() == "") {
+                            findNavController().navigate(R.id.joinCreateCircleFragment)
+                            return
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
+
+                })
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -71,6 +101,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         dbRefUser = database.reference.child("users")
         dbRefCircleCodes = database.reference.child("circle_codes")
         dbRefTransactions = database.reference.child("transactions")
+
 
         (activity as DrawerLocker?)!!.unlockDrawer()
         progressBarCircular.isVisible = true
@@ -83,14 +114,15 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         //Circle Code
         val user = firebaseAuth.currentUser
+        var circleCode: String? = null
         if (user != null) {
             val userReferenceListener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val circleCode = snapshot.child("circleCode").value.toString()
+                    circleCode = snapshot.child("circleCode").value.toString()
                     val firstName = snapshot.child("firstName").value.toString()
                     Log.d("TAG", "The circle code is : $circleCode")
                     Log.d("TAG", "The first name is : $firstName")
-                    if (circleCode.isNotEmpty() && circleCode != "") {
+                    if (circleCode!!.isNotEmpty() && circleCode != "") {
                         progressBarCircular.isVisible = false
                         textViewGreetUser.text = "$greetingMessage $firstName"
                     } else {
@@ -105,6 +137,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 }
             }
             val userIdReference = dbRefUser.child(user.uid)
+            userIdReference.keepSynced(true)
             userIdReference.addValueEventListener(userReferenceListener)
 
 
@@ -114,10 +147,15 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     var totalAmount = 0.0F
                     for (date in snapshot.children) {
                         if (date.key!!.toLong() > dateLastSettlement) {
-                            if (date.child("userId").getValue().toString() == user.uid) {
-                                val amount = date.child("amount").getValue().toString()
-                                val floatAmount = amount.toFloat()
-                                totalAmount += floatAmount
+                            if(circleCode != null) {
+                                if(circleCode ==  date.child("circleCode").getValue().toString()) {
+                                    if (date.child("userId").getValue().toString() == user.uid) {
+                                        val amount = date.child("amount").getValue().toString()
+                                        val floatAmount = amount.toFloat()
+                                        totalAmount += floatAmount
+                                    }
+                                }
+                            } else {
 
                             }
                         }
@@ -142,40 +180,47 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 }
             }
             dbRefTransactions.addValueEventListener(transactionReferenceListener)
-
+            dbRefTransactions.keepSynced(true)
 
             //All User's Contribution RecyclerView
             dbRefTransactions.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     usersContributionList.clear()
                     contributedUserMap.clear()
+                    var countOtherUsers = 0
                     var totalAmount = 0.0F
                     allUsersTotalContribution = 0.0F
                     for (date in snapshot.children) {
                         if (date.key!!.toLong() > dateLastSettlement) {
-                            val userString = date.child("userId").getValue().toString()
-                            if (userString != user.uid) {
-                                val amount = date.child("amount").getValue().toString()
-                                if (contributedUserMap.containsKey(userString)) {
-                                    val oldAmount = contributedUserMap[userString]
-                                    totalAmount = oldAmount!!.toFloat() + amount.toFloat()
-                                } else {
-                                    totalAmount += amount.toFloat()
+                            if (circleCode != null) {
+                                if (circleCode == date.child("circleCode").getValue().toString()) {
+                                    val userString = date.child("userId").getValue().toString()
+                                    if (userString != user.uid) {
+                                        countOtherUsers++
+                                        val amount = date.child("amount").getValue().toString()
+                                        if (contributedUserMap.containsKey(userString)) {
+                                            val oldAmount = contributedUserMap[userString]
+                                            totalAmount = oldAmount!!.toFloat() + amount.toFloat()
+                                        } else {
+                                            totalAmount += amount.toFloat()
+                                        }
+                                        contributedUserMap.put(userString, totalAmount)
+                                        totalAmount = 0.0F
+                                    }
+                                    val amountX = date.child("amount").getValue().toString()
+                                    val amountXFloat = amountX.toFloat()
+                                    allUsersTotalContribution += amountXFloat
                                 }
-                                contributedUserMap.put(userString, totalAmount)
-                                totalAmount = 0.0F
                             }
-                            val amountX = date.child("amount").getValue().toString()
-                            val amountXFloat = amountX.toFloat()
-                            allUsersTotalContribution += amountXFloat
                         }
                     }
+
 
                     //Display User's first and last name in recuclerview
                     for (userKeys in contributedUserMap) {
                         userNameReference = dbRefUser.child(userKeys.key)
                         var fullName: String
-                        userNameReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                        userNameReference.addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
                                 val amount = userKeys.value
                                 val percentageContribution: Float = (amount * 100) / allUsersTotalContribution
@@ -183,9 +228,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                                 fullName = "${snapshot.child("firstName").value.toString()} ${snapshot.child("lastName").value.toString()}"
                                 usersContributionList.add(UsersContribution(fullName, amount.toString(), toFloat.toFloat()))
 
-                                if (usersContributionList.size == 0) {
-                                    textViewNoOtherUsers.visibility = View.VISIBLE
-                                }
                                 recyclerOthersContribution.adapter = AllUserContributionsAdapter(usersContributionList)
                                 recyclerOthersContribution.layoutManager = LinearLayoutManager(requireContext())
                                 recyclerOthersContribution.setHasFixedSize(true)
@@ -197,12 +239,16 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                         })
 
                     }
+                    if (recyclerOthersContribution.adapter?.itemCount == 0) {
+                        textViewNoOtherUsers.visibility = View.VISIBLE
+                    }
+
                     if (allUsersTotalContribution != 0.0F) {
                         val percentage = (displayAmount.toFloat() * 100) / allUsersTotalContribution
                         val percentageFloat = roundIt(percentage).toFloat()
                         val displayText = "$$displayAmount ($percentageFloat%)"
                         val ss = SpannableString(displayText)
-                        ss.setSpan(AbsoluteSizeSpan(20, true), ss.indexOf("(", 0,false), ss.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        ss.setSpan(AbsoluteSizeSpan(20, true), ss.indexOf("(", 0, false), ss.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 
                         textViewUsersContribution.text = ss
                     } else {

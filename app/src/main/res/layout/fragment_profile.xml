@@ -158,7 +158,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:elevation="5dp"
-        android:outlineSpotShadowColor="@android:color/transparent"
         android:src="@drawable/ic_add"
         app:maxImageSize="32dp" />
 

@@ -68,13 +68,18 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                             if (it.isSuccessful) {
                                 firebaseUser = firebaseAuth!!.currentUser!!
                                 val userReference = databaseReferenceUser!!.child(firebaseUser.uid)
-                                userReference.addValueEventListener(object : ValueEventListener {
+                                userReference.addListenerForSingleValueEvent(object : ValueEventListener {
                                     override fun onDataChange(snapshot: DataSnapshot) {
-                                        val circleCode = snapshot.child("circleCode").value.toString()
                                         val firstName = snapshot.child("firstName").value.toString()
-                                        Log.d("TAG", "The circle code is : $circleCode")
-                                        if (circleCode.isNotEmpty() && circleCode != "") {
-                                            findNavController().navigate(R.id.profileFragment)
+                                        if(snapshot.child("circleCode").exists()) {
+                                            val circleCode = snapshot.child("circleCode").value.toString()
+                                            Log.d("TAG", "The circle code is : $circleCode")
+                                            if (circleCode.isNotEmpty() && circleCode != "") {
+                                                findNavController().navigate(R.id.profileFragment)
+                                            } else {
+                                                val action = LoginFragmentDirections.actionLoginFragmentToJoinCreateCircleFragment(firstName)
+                                                findNavController().navigate(action)
+                                            }
                                         } else {
                                             val action = LoginFragmentDirections.actionLoginFragmentToJoinCreateCircleFragment(firstName)
                                             findNavController().navigate(action)

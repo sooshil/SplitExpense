@@ -50,6 +50,8 @@ internal class CreateCircleFragment : Fragment(R.layout.fragment_create_circle) 
         val user = firebaseAuth.currentUser
         if (user != null) {
             textViewHelloFirstName.text = "Hello $mFirstName"
+        } else {
+            textViewHelloFirstName.text = "Hello User"
         }
 
         buttonCreateCircle.setOnClickListener {
@@ -67,7 +69,7 @@ internal class CreateCircleFragment : Fragment(R.layout.fragment_create_circle) 
                     //check if the code already exists
                     firebaseUser = firebaseAuth.currentUser!!
 
-                    databaseReferenceCircleCode!!.addValueEventListener(object : ValueEventListener {
+                    databaseReferenceCircleCode!!.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             for (code in snapshot.children) {
                                 if (code.key.toString() == circleCode) {
@@ -80,11 +82,8 @@ internal class CreateCircleFragment : Fragment(R.layout.fragment_create_circle) 
                             if (!codeExists) {
                                 val currentUserCircleCodes = databaseReferenceCircleCode?.child(circleCode)
                                 val currentUserId = firebaseAuth.currentUser?.uid.toString()
-                                currentUserCircleCodes?.apply {
-                                    child(currentUserId).setValue(currentUserId)
-                                }
+                                currentUserCircleCodes?.child(currentUserId)?.setValue(currentUserId)
                                 databaseReferenceUser!!.child(currentUserId).child("circleCode").setValue(circleCode)
-
                                 findNavController().navigate(R.id.profileFragment)
                             }
                         }
