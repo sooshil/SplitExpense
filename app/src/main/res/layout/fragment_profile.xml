@@ -73,21 +73,25 @@
                     android:textColor="@color/colorWhite"
                     android:textSize="18sp" />
 
-                <TextView
+                <com.robinhood.ticker.TickerView
+                    android:gravity="center"
+                    app:ticker_animationDuration="1500"
+                    app:ticker_defaultPreferredScrollingDirection="any"
                     android:id="@+id/textViewYourContributionAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="30sp"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/rounded_rectangle_holo"
                     android:fontFamily="@font/jura_light"
                     android:padding="10dp"
-                    android:paddingStart="30dp"
-                    android:paddingEnd="30dp"
-                    android:text="$0.00 (0.00%)"
+                    android:paddingStart="50dp"
+                    android:paddingEnd="50dp"
+                    android:text="$0.00 (0%)"
                     android:textColor="@color/colorAccent"
-                    android:textSize="40sp" />
+                    />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

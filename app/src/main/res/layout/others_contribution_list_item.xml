@@ -42,15 +42,18 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-        <TextView
+        <com.robinhood.ticker.TickerView
             android:id="@+id/textViewContributionAmount"
+            android:gravity="center"
+            app:ticker_animationDuration="1500"
+            app:ticker_defaultPreferredScrollingDirection="any"
+            android:textSize="15sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:fontFamily="@font/jura"
             android:padding="5dp"
             android:paddingStart="25dp"
-            android:textSize="20sp"
             android:maxLines="1"
             android:text="$245 (65%)"
             android:textColor="@color/colorAccent"

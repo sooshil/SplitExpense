@@ -59,6 +59,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:20.0.1'
     implementation 'com.google.firebase:firebase-database:19.6.0'
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0"
+    implementation 'com.robinhood.ticker:ticker:2.0.2'
 }
 repositories {
     maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }

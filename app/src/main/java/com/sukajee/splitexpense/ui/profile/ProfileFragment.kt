@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.robinhood.ticker.TickerUtils
+import com.robinhood.ticker.TickerView
 import com.sukajee.splitexpense.DrawerLocker
 import com.sukajee.splitexpense.R
 import com.sukajee.splitexpense.data.UsersContribution
@@ -34,7 +36,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private lateinit var dbRefTransactions: DatabaseReference
     private lateinit var database: FirebaseDatabase
     private lateinit var textViewGreetUser: TextView
-    private lateinit var textViewUsersContribution: TextView
+    private lateinit var textViewUsersContribution: TickerView
     private var usersContributionList: MutableList<UsersContribution> = ArrayList()
     private lateinit var recyclerOthersContribution: RecyclerView
     private var contributedUserMap: MutableMap<String, Float> = hashMapOf()
@@ -105,6 +107,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         progressBarCircular.isVisible = true
         textViewGreetUser = view.findViewById(R.id.textViewGreetUser)
         textViewUsersContribution = view.findViewById(R.id.textViewYourContributionAmount)
+        textViewUsersContribution.setCharacterLists(TickerUtils.provideNumberList())
 
 
         val currentDate = currentDate()
@@ -161,7 +164,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                                 val ss = SpannableString(displayText)
                                 ss.setSpan(AbsoluteSizeSpan(20, true), ss.indexOf("(", 0, false), ss.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-                                textViewUsersContribution.text = ss
+                                textViewUsersContribution.text = ss.toString()
                             } else {
                                 textViewUsersContribution.text = "$$displayAmount"
                             }
@@ -234,7 +237,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                                         val ss = SpannableString(displayText)
                                         ss.setSpan(AbsoluteSizeSpan(20, true), ss.indexOf("(", 0, false), ss.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-                                        textViewUsersContribution.text = ss
+                                        textViewUsersContribution.text = ss.toString()
                                     } else {
                                         textViewUsersContribution.text = "$$displayAmount"
                                     }
