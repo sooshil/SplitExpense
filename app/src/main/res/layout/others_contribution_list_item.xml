@@ -44,7 +44,7 @@
 
         <com.robinhood.ticker.TickerView
             android:id="@+id/textViewContributionAmount"
-            android:gravity="center"
+            android:gravity="center_vertical|end"
             app:ticker_animationDuration="1500"
             app:ticker_defaultPreferredScrollingDirection="any"
             android:textSize="15sp"
