@@ -11,13 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -124,7 +120,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         //Circle Code
         val user = firebaseAuth.currentUser
-        var circleCode: String? = null
+        var circleCode: String?
         if (user != null) {
             dbRefUser.child(user.uid).addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -164,7 +160,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                                 }
                             }
                             displayAmount = roundIt(totalAmount)
-                            var percentageFloat = 0.0F
+                            var percentageFloat: Float
                             if (allUsersTotalContribution != 0.0F) {
                                 val percentage = (displayAmount.toFloat() * 100) / allUsersTotalContribution
                                 percentageFloat = roundIt(percentage).toFloat()
