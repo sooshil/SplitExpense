@@ -1,5 +1,6 @@
 package com.sukajee.splitexpense.ui.profile
 
+import android.graphics.Typeface
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -10,8 +11,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -46,6 +52,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private lateinit var displayAmount: String
     private lateinit var textViewNoOtherUsers: TextView
     private lateinit var progressBarCircular: ProgressBar
+    private lateinit var typeface: Typeface
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
@@ -108,6 +115,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         textViewGreetUser = view.findViewById(R.id.textViewGreetUser)
         textViewUsersContribution = view.findViewById(R.id.textViewYourContributionAmount)
         textViewUsersContribution.setCharacterLists(TickerUtils.provideNumberList())
+        typeface = ResourcesCompat.getFont(requireContext(), R.font.jura)!!
+        textViewUsersContribution.typeface = typeface
 
 
         val currentDate = currentDate()
@@ -117,7 +126,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         val user = firebaseAuth.currentUser
         var circleCode: String? = null
         if (user != null) {
-
             dbRefUser.child(user.uid).addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     circleCode = snapshot.child("circleCode").value.toString()
@@ -168,7 +176,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                             } else {
                                 textViewUsersContribution.text = "$$displayAmount"
                             }
-
 
 
                             //All User's Contribution RecyclerView
@@ -223,7 +230,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                                             }
                                         })
                                     }
-                                    if(contributedUserMap.isEmpty()) {
+                                    if (contributedUserMap.isEmpty()) {
                                         textViewNoOtherUsers.visibility = View.VISIBLE
                                     }
                                     recyclerOthersContribution.adapter = AllUserContributionsAdapter(usersContributionList)

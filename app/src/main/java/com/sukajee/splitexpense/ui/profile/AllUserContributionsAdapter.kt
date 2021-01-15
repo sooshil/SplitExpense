@@ -1,9 +1,12 @@
 package com.sukajee.splitexpense.ui.profile
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.robinhood.ticker.TickerUtils
 import com.robinhood.ticker.TickerView
@@ -20,7 +23,6 @@ class AllUserContributionsAdapter(private val contributionList: List<UsersContri
 
         textViewContributionAmount = itemView.findViewById(R.id.textViewContributionAmount)
         textViewContributionAmount.setCharacterLists(TickerUtils.provideNumberList())
-
         return ViewHolder(itemView)
     }
 

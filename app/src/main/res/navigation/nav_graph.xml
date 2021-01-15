@@ -146,7 +146,6 @@
         <action
             android:id="@+id/action_addNewTransactionFragment_to_profileFragment"
             app:destination="@id/profileFragment"
-            app:popUpTo="@id/profileFragment"
-            app:popUpToInclusive="false" />
+            app:popUpTo="@id/profileFragment" />
     </fragment>
 </navigation>

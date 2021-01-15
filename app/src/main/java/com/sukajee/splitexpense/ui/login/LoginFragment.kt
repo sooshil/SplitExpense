@@ -33,6 +33,11 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     private lateinit var password: String
     private var lastClickTime: Long = 0
 
+
+    companion object {
+        private const val TAG = "LoginFragment"
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -73,7 +78,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                                         val firstName = snapshot.child("firstName").value.toString()
                                         if(snapshot.child("circleCode").exists()) {
                                             val circleCode = snapshot.child("circleCode").value.toString()
-                                            Log.d("TAG", "The circle code is : $circleCode")
+                                            Log.d(TAG, "The circle code is : $circleCode")
                                             if (circleCode.isNotEmpty() && circleCode != "") {
                                                 findNavController().navigate(R.id.profileFragment)
                                             } else {
@@ -86,7 +91,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                                         }
                                     }
                                     override fun onCancelled(error: DatabaseError) {
-                                        Log.d("TAG", error.message)
+                                        Log.d(TAG, error.message)
                                     }
                                 })
                             } else {
@@ -107,4 +112,5 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     fun isValidEmail(emailToValidate: CharSequence): Boolean {
         return !TextUtils.isEmpty(emailToValidate) && Patterns.EMAIL_ADDRESS.matcher(emailToValidate).matches()
     }
+
 }
