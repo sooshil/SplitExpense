@@ -1,39 +1,45 @@
 package com.sukajee.splitexpense
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.os.SystemClock
-import android.provider.ContactsContract
 import android.util.Log
 import android.view.View
 import android.widget.DatePicker
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
 import com.sukajee.splitexpense.data.Transaction
+import com.sukajee.splitexpense.data.User
 import com.sukajee.splitexpense.util.DatePickerFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_add_new_transaction.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 import java.text.DateFormat
 import java.util.*
 
 class AddNewTransactionFragment : Fragment(R.layout.fragment_add_new_transaction) {
 
     private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var userReference: DatabaseReference
-    private lateinit var transactionReference: DatabaseReference
-    private lateinit var database: FirebaseDatabase
+    private lateinit var fireStore: FirebaseFirestore
     private var lastClickTime: Long = 0
     private var circleCode: String = ""
+
+    companion object {
+        private val TAG = "AddNewTransactionFragment"
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         firebaseAuth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance()
-        userReference = database.reference.child("users")
-        transactionReference = database.reference.child("transactions")
+        fireStore = FirebaseFirestore.getInstance()
 
         buttonTransactionDate.text = currentDate()
         Log.d("DATE_DEFAULT", "DateFormatted: ${currentDate()}")
@@ -78,34 +84,73 @@ class AddNewTransactionFragment : Fragment(R.layout.fragment_add_new_transaction
 
             val currentMilli = System.currentTimeMillis()
             val user = firebaseAuth.currentUser
+            var isNavigateReady = false
             if (user != null) {
-                userReference.child(user.uid)
-                        .addValueEventListener(object : ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                circleCode = snapshot.child("circleCode").value.toString()
-                                val transaction = Transaction(user.uid, currentMilli, date, circleCode, description, storeName, amount, note)
-                                val ref = transactionReference.child(date.toString())
-                                ref.setValue(transaction)
+                val userRef = fireStore.collection("users").document(user.uid)
+                progressBarCircular.visibility = View.VISIBLE
+                CoroutineScope(Dispatchers.Main).launch {
+                    userRef.get()
+                            .addOnSuccessListener { documentSnapshot ->
+                                val serverUser = documentSnapshot.toObject<User>()
+                                circleCode = serverUser!!.circleCode
+                                val lastSettlementDate = getDate(serverUser.lastSettlementDate.toLong())
+                                //check if user is trying to enter data on the date before the last settlement date
+                                if(date < serverUser.lastSettlementDate.toLong()) {
+                                    Toast.makeText(requireContext(), "You cannot select date before $lastSettlementDate", Toast.LENGTH_LONG).show();
+                                    return@addOnSuccessListener
+                                } else {
+                                    val transaction = Transaction(user.uid, currentMilli, date, circleCode, description, storeName, amount, note)
+                                    fireStore.collection("transactions").document(date.toString()).set(transaction)
+
+                                    fireStore.runTransaction { readWriteTransaction ->
+                                        val snapshot = readWriteTransaction.get(userRef)
+                                        val newTotalContribution = snapshot.getDouble("totalContribution").toString().toFloat() + amount
+                                        val newTotalLifeTimeContribution = snapshot.getDouble("totalLifeTimeContribution").toString().toFloat() + amount
+                                        readWriteTransaction.update(userRef, "totalContribution", newTotalContribution)
+                                        readWriteTransaction.update(userRef, "totalLifeTimeContribution", newTotalLifeTimeContribution)
+                                        null
+                                    }.addOnSuccessListener {
+                                        Log.d(TAG, "Transaction success!")
+                                    }.addOnFailureListener { e ->
+                                        Log.w(TAG, "Transaction failure.", e)
+                                    }
+
+                                    fireStore.collection("users")
+                                            .whereEqualTo("circleCode", circleCode)
+                                            .get()
+                                            .addOnSuccessListener { querySnaps ->
+                                                if (!querySnaps.isEmpty) {
+                                                    for (document in querySnaps.documents) {
+                                                        val oldCircleTotal = document.get("circleTotal")
+                                                        val newCircleTotal = oldCircleTotal.toString().toFloat() + amount
+                                                        val docRef = fireStore.collection("users").document(document.id)
+                                                        fireStore.runBatch { batch ->
+                                                            batch.update(docRef, "circleTotal", newCircleTotal.toString().toFloat())
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                    clearFields()
+                                    findNavController().navigate(R.id.profileFragment)
+                                }
+
                             }
-
-                            override fun onCancelled(error: DatabaseError) {
-                                TODO("Not yet implemented")
+                            .addOnFailureListener {
+                                Log.e(TAG, "onViewCreated: Error fetching firestore data.")
                             }
-
-                        })
-
+                    progressBarCircular.visibility = View.INVISIBLE
+                }
             }
-            clearFields()
-            findNavController().navigate(R.id.profileFragment)
+
         }
 
         buttonTransactionDate.setOnClickListener { v ->
-            if (SystemClock.elapsedRealtime() - lastClickTime < 5000) {
+            if (SystemClock.elapsedRealtime() - lastClickTime < 1000) {
                 return@setOnClickListener
             }
             lastClickTime = SystemClock.elapsedRealtime()
 
-            //mDatePicker.getDatePicker().setMaxDate(System.currentTimeMillis());
+//            mDatePicker.getDatePicker().setMaxDate(System.currentTimeMillis());
             val newFragment = DatePickerFragment()
             newFragment.show(childFragmentManager, "datePicker")
         }
@@ -128,5 +173,12 @@ class AddNewTransactionFragment : Fragment(R.layout.fragment_add_new_transaction
         editTextStore.text = null
         editTextAmount.text = null
         editTextNote.text = null
+        editTextDescription.requestFocus()
+    }
+
+    fun getDate(milliSeconds: Long): String? {
+        val calendar: Calendar = Calendar.getInstance()
+        calendar.setTimeInMillis(milliSeconds)
+        return DateFormat.getDateInstance(DateFormat.FULL).format(calendar.time)
     }
 }

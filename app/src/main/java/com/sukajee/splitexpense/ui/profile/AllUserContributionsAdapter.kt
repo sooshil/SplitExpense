@@ -12,7 +12,10 @@ import com.sukajee.splitexpense.R
 import com.sukajee.splitexpense.data.UsersContribution
 import kotlinx.android.synthetic.main.others_contribution_list_item.view.*
 
-class AllUserContributionsAdapter(private val contributionList: List<UsersContribution>) : RecyclerView.Adapter<AllUserContributionsAdapter.ViewHolder>() {
+class AllUserContributionsAdapter(
+        private val contributionList: List<UsersContribution>,
+        private val listener: OnItemCliclListener
+) : RecyclerView.Adapter<AllUserContributionsAdapter.ViewHolder>() {
 
     private lateinit var textViewContributionAmount: TickerView
 
@@ -21,7 +24,7 @@ class AllUserContributionsAdapter(private val contributionList: List<UsersContri
 
         textViewContributionAmount = itemView.findViewById(R.id.textViewContributionAmount)
 
-        val typeface = ResourcesCompat.getFont(itemView.context, R.font.jura)!!
+        val typeface = ResourcesCompat.getFont(itemView.context, R.font.bai_jamjuree_medium)!!
         textViewContributionAmount.typeface = typeface
 
         textViewContributionAmount.setCharacterLists(TickerUtils.provideNumberList())
@@ -34,14 +37,28 @@ class AllUserContributionsAdapter(private val contributionList: List<UsersContri
         holder.userName.text = currentItem.usersName
 
 
-        holder.contributionAmount.text = "${currentItem.amount} (${currentItem.percentage}%)"
+        holder.contributionAmount.text = "$${currentItem.amount} (${currentItem.percentage}%)"
     }
 
     override fun getItemCount() = contributionList.size
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         val userName : TextView = itemView.textViewUserName
         val contributionAmount : TickerView = itemView.textViewContributionAmount
 
+        init {
+            itemView.setOnClickListener (this)
+        }
+
+        override fun onClick(v: View?) {
+            val position = adapterPosition
+            if(position != RecyclerView.NO_POSITION) {
+                listener.onItemClick(position)
+            }
+        }
+    }
+
+    interface OnItemCliclListener {
+        fun onItemClick(position: Int)
     }
 }

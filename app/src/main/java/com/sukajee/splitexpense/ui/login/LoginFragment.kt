@@ -1,5 +1,6 @@
 package com.sukajee.splitexpense.ui.login
 
+import android.app.ProgressDialog
 import android.os.Bundle
 import android.os.SystemClock
 import android.text.TextUtils
@@ -14,24 +15,31 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Source
+import com.google.firebase.firestore.ktx.toObject
 import com.sukajee.splitexpense.DrawerLocker
 import com.sukajee.splitexpense.R
+import com.sukajee.splitexpense.data.User
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_profile.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
-    private var databaseReferenceUser: DatabaseReference? = null
-    private var databaseReferenceCircleCodes: DatabaseReference? = null
-    private var database: FirebaseDatabase? = null
-    private var firebaseAuth: FirebaseAuth? = null
+    private lateinit var fireStore: FirebaseFirestore
+    private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firebaseUser: FirebaseUser
     private lateinit var email: String
     private lateinit var password: String
     private var lastClickTime: Long = 0
+    private lateinit var progressBar: ProgressBar
 
 
     companion object {
@@ -42,20 +50,22 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         super.onViewCreated(view, savedInstanceState)
 
         firebaseAuth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance()
-        databaseReferenceUser = database?.reference!!.child("users")
-        databaseReferenceCircleCodes = database?.reference!!.child("circle_codes")
+        fireStore = FirebaseFirestore.getInstance()
+        progressBar = view.findViewById(R.id.progressBar)
 
         (activity as DrawerLocker?)!!.lockDrawer()
 
         buttonLogin.setOnClickListener {
             email = editTextEmail.text.toString().trim()
             password = editTextPassword.text.toString().trim()
-            login(email, password)
+            progressBar.visibility = View.VISIBLE
+            CoroutineScope(Dispatchers.Main).launch {
+                login(email, password)
+            }
         }
 
         buttonRegister.setOnClickListener {
-            if(SystemClock.elapsedRealtime() - lastClickTime < 5000) {
+            if (SystemClock.elapsedRealtime() - lastClickTime < 1000) {
                 return@setOnClickListener
             }
             lastClickTime = SystemClock.elapsedRealtime()
@@ -66,39 +76,41 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     }
 
     private fun login(emailEntered: String, passwordEntered: String) {
+
         if (emailEntered.length > 0 && passwordEntered.length > 0) {
             if (isValidEmail(emailEntered)) {
-                firebaseAuth?.signInWithEmailAndPassword(emailEntered, passwordEntered)
-                        ?.addOnCompleteListener {
+                firebaseAuth.signInWithEmailAndPassword(emailEntered, passwordEntered)
+                        .addOnCompleteListener {
                             if (it.isSuccessful) {
-                                firebaseUser = firebaseAuth!!.currentUser!!
-                                val userReference = databaseReferenceUser!!.child(firebaseUser.uid)
-                                userReference.addListenerForSingleValueEvent(object : ValueEventListener {
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        val firstName = snapshot.child("firstName").value.toString()
-                                        if(snapshot.child("circleCode").exists()) {
-                                            val circleCode = snapshot.child("circleCode").value.toString()
-                                            Log.d(TAG, "The circle code is : $circleCode")
-                                            if (circleCode.isNotEmpty() && circleCode != "") {
-                                                findNavController().navigate(R.id.profileFragment)
-                                            } else {
-                                                val action = LoginFragmentDirections.actionLoginFragmentToJoinCreateCircleFragment(firstName)
-                                                findNavController().navigate(action)
+                                firebaseUser = firebaseAuth.currentUser!!
+                                var circleCode = ""
+                                var firstName = ""
+                                val userRef = fireStore.collection("users").document(firebaseUser.uid)
+                                userRef.get()
+                                        .addOnSuccessListener { documentSnapshot ->
+                                            if (documentSnapshot != null) {
+                                                val user = documentSnapshot.toObject<User>()
+                                                circleCode = user!!.circleCode
+                                                firstName = user.firstName
+                                                if (circleCode != "None") {
+                                                    progressBar.visibility = View.INVISIBLE
+                                                    val action = LoginFragmentDirections.actionLoginFragmentToProfileFragment(user)
+                                                    findNavController().navigate(action)
+                                                } else {
+                                                    progressBar.visibility = View.INVISIBLE
+                                                    val action = LoginFragmentDirections.actionLoginFragmentToJoinCreateCircleFragment(user)
+                                                    findNavController().navigate(action)
+                                                }
                                             }
-                                        } else {
-                                            val action = LoginFragmentDirections.actionLoginFragmentToJoinCreateCircleFragment(firstName)
-                                            findNavController().navigate(action)
                                         }
-                                    }
-                                    override fun onCancelled(error: DatabaseError) {
-                                        Log.d(TAG, error.message)
-                                    }
-                                })
+                                        .addOnFailureListener {
+                                            Log.e(TAG, it.message.toString())
+                                        }
                             } else {
                                 Toast.makeText(requireContext(), "Login failed, please try again", Toast.LENGTH_SHORT).show();
                             }
                         }
-                        ?.addOnFailureListener {
+                        .addOnFailureListener {
                             Toast.makeText(requireContext(), "Login failed. Exception: ${it.message}", Toast.LENGTH_SHORT).show();
                         }
             } else {
@@ -107,6 +119,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         } else {
             Toast.makeText(requireContext(), "Please enter username and password to login.", Toast.LENGTH_SHORT).show();
         }
+        progressBar.visibility = View.INVISIBLE
     }
 
     fun isValidEmail(emailToValidate: CharSequence): Boolean {

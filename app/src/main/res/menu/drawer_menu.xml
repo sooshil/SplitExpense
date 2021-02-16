@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
@@ -9,19 +10,25 @@
             android:icon="@drawable/ic_profile"
             android:title="Profile" />
 
+        <item
+            android:id="@+id/nav_settle"
+            android:icon="@drawable/ic_settle"
+            android:title="Settle" />
+
     </group>
 
 
     <item android:title="Actions">
         <menu>
             <item
-                android:id="@+id/nav_logout"
-                android:icon="@drawable/ic_logout"
-                android:title="Logout" />
-            <item
                 android:id="@+id/nav_leave_circle"
                 android:icon="@drawable/ic_send"
                 android:title="Leave Circle" />
+
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/ic_logout"
+                android:title="Logout" />
         </menu>
     </item>
 </menu>

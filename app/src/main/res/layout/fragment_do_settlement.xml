@@ -5,7 +5,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/backgroundGray"
-    android:padding="15dp">
+    android:padding="15dp"
+    tools:context="com.sukajee.splitexpense.DoSettlementFragment">
 
     <TextView
         android:id="@+id/textViewReviewAndSettle"
@@ -13,24 +14,31 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:text="Here are the contributions for this term. Please review and click on Settle Now button to do settlement"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Here are the contributions for this settlement period. Please review and click on Settle Now button to do settlement"
         android:textColor="@color/colorAccent"
         android:paddingVertical="15dp"
         />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerUsersContribution"
+        android:id="@+id/recyUsersContribution"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/textViewReviewAndSettle"
-        tools:listitem="@layout/others_contribution_list_item"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/others_contribution_list_item" />
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/buttonPreviewSettlement"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Settle Now"
+        android:text="Preview Settlement"
+        android:textColor="@color/colorWhite"
         android:background="@drawable/button_rounded"
-        app:layout_constraintTop_toBottomOf="@id/recyclerUsersContribution"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:padding="15dp"
         android:layout_marginTop="15dp"/>
 

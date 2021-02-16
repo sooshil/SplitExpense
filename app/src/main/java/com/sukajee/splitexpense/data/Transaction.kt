@@ -3,63 +3,44 @@ package com.sukajee.splitexpense.data
 import android.os.Parcel
 import android.os.Parcelable
 
-class Transaction : Parcelable {
-    var userId : String?
-    var dataEntryDate: Long
-    var dateOfTransaction: Long
-    var circleCode: String?
-    var description: String?
-    var storeName: String?
-    var amount: Float
-    var note: String?
-
-    protected constructor(`in`: Parcel) {
-        userId = `in`.readString()
-        dataEntryDate = `in`.readLong()
-        dateOfTransaction = `in`.readLong()
-        circleCode = `in`.readString()
-        description = `in`.readString()
-        storeName = `in`.readString()
-        amount = `in`.readFloat()
-        note = `in`.readString()
-    }
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(userId)
-        dest.writeLong(dataEntryDate)
-        dest.writeLong(dateOfTransaction)
-        dest.writeString(circleCode)
-        dest.writeString(description)
-        dest.writeString(storeName)
-        dest.writeFloat(amount)
-        dest.writeString(note)
+class Transaction(
+        var userId: String = "",
+        var dataEntryDate: Long = 0L,
+        var dateOfTransaction: Long = 0L,
+        var circleCode: String = "",
+        var description: String? = "",
+        var storeName: String = "",
+        var amount: Float = 0.0F,
+        var note: String = ""
+) : Parcelable {
+    constructor(parcel: Parcel) : this(
+            parcel.readString().toString(),
+            parcel.readLong(),
+            parcel.readLong(),
+            parcel.readString().toString(),
+            parcel.readString().toString(),
+            parcel.readString().toString(),
+            parcel.readFloat(),
+            parcel.readString().toString()) {
     }
 
     override fun describeContents(): Int {
-        return 0
+        TODO("Not yet implemented")
     }
 
-
-    constructor(userId : String?, dataEntryDate: Long, dateOfTransaction: Long, circleCode: String?, description: String?, storeName: String?, amount: Float, note: String?) {
-        this.userId = userId
-        this.dataEntryDate = dataEntryDate
-        this.dateOfTransaction = dateOfTransaction
-        this.circleCode = circleCode
-        this.description = description
-        this.storeName = storeName
-        this.amount = amount
-        this.note = note
+    override fun writeToParcel(p0: Parcel?, p1: Int) {
+        TODO("Not yet implemented")
     }
 
-    companion object {
-        val CREATOR: Parcelable.Creator<Transaction?> = object : Parcelable.Creator<Transaction?> {
-            override fun createFromParcel(`in`: Parcel): Transaction? {
-                return Transaction(`in`)
-            }
+    companion object CREATOR : Parcelable.Creator<Transaction> {
+        override fun createFromParcel(parcel: Parcel): Transaction {
+            return Transaction(parcel)
+        }
 
-            override fun newArray(size: Int): Array<Transaction?> {
-                return arrayOfNulls(size)
-            }
+        override fun newArray(size: Int): Array<Transaction?> {
+            return arrayOfNulls(size)
         }
     }
+
+
 }

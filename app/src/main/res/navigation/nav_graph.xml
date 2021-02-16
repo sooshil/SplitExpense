@@ -67,12 +67,29 @@
         <action
             android:id="@+id/action_profileFragment_to_addNewTransactionFragment"
             app:destination="@id/addNewTransactionFragment" />
+        <argument
+            android:name="userObject"
+            app:argType="com.sukajee.splitexpense.data.User"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_profileFragment_to_usersContributionDetailsFragment"
+            app:destination="@id/usersContributionDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/usersContributionDetailsFragment"
         android:name="com.sukajee.splitexpense.ui.details.UsersContributionDetailsFragment"
         android:label="Transaction Details"
-        tools:layout="@layout/users_contribution_detail_list_item" />
+        tools:layout="@layout/users_contribution_detail_list_item" >
+        <action
+            android:id="@+id/action_usersContributionDetailsFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="userId"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.sukajee.splitexpense.SettingsFragment"
@@ -99,12 +116,18 @@
             android:id="@+id/action_joinCreateCircleFragment_to_createCircleFragment"
             app:destination="@id/createCircleFragment" />
         <argument
-            android:name="firstName"
-            app:argType="string"
-             />
+            android:name="userObject"
+            app:argType="com.sukajee.splitexpense.data.User"
+            app:nullable="true"
+            android:defaultValue="@null" />
         <action
             android:id="@+id/action_joinCreateCircleFragment_to_joinCircleFragment"
             app:destination="@id/joinCircleFragment" />
+        <action
+            android:id="@+id/action_joinCreateCircleFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/createCircleFragment"
@@ -113,11 +136,19 @@
         tools:layout="@layout/fragment_create_circle">
         <action
             android:id="@+id/action_createCircleFragment_to_profileFragment"
-            app:destination="@id/profileFragment" >
-        </action>
+            app:destination="@id/profileFragment"
+            app:popUpTo="@id/profileFragment"
+            app:popUpToInclusive="true"></action>
         <argument
-            android:name="firstName"
-            app:argType="string" />
+            android:name="userObject"
+            android:defaultValue="@null"
+            app:argType="com.sukajee.splitexpense.data.User"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_createCircleFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/joinCircleFragment"
@@ -127,12 +158,20 @@
         <action
             android:id="@+id/action_joinCircleFragment_to_profileFragment"
             app:destination="@id/profileFragment"
-            app:popUpTo="@id/profileFragment" >
+            app:popUpTo="@id/profileFragment"
+            app:popUpToInclusive="true">
 
         </action>
         <argument
-            android:name="firstName"
-            app:argType="string" />
+            android:name="userObject"
+            app:argType="com.sukajee.splitexpense.data.User"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_joinCircleFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/logoutFragment"
@@ -147,5 +186,36 @@
             android:id="@+id/action_addNewTransactionFragment_to_profileFragment"
             app:destination="@id/profileFragment"
             app:popUpTo="@id/profileFragment" />
+        <action
+            android:id="@+id/action_addNewTransactionFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
+    <fragment
+        android:id="@+id/doSettlementFragment"
+        android:name="com.sukajee.splitexpense.DoSettlementFragment"
+        android:label="Contributions Details"
+        tools:layout="@layout/fragment_do_settlement">
+        <action
+            android:id="@+id/action_doSettlementFragment_to_usersContributionDetailsFragment"
+            app:destination="@id/usersContributionDetailsFragment" />
+    </fragment>
+    <action android:id="@+id/action_global_doSettlementFragment" app:destination="@id/doSettlementFragment" />
+    <action android:id="@+id/action_global_settingsFragment" app:destination="@id/settingsFragment" />
+    <action android:id="@+id/action_global_logoutFragment" app:destination="@id/logoutFragment" />
+    <fragment
+        android:id="@+id/settledResultFragment"
+        android:name="com.sukajee.splitexpense.SettledResultFragment"
+        android:label="Settlement"
+        tools:layout="@layout/fragment_settled_result">
+        <argument
+            android:name="circleCode"
+            app:argType="string" />
+        <argument
+            android:name="isCircleHead"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+    <action android:id="@+id/action_global_settledResultFragment" app:destination="@id/settledResultFragment" />
 </navigation>

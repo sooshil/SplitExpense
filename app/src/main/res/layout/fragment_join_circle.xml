@@ -50,11 +50,13 @@
         android:layout_marginTop="25dp"
         android:inputType="text"
         android:maxLines="1"
-        android:maxLength="6"
-        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYX0123456789"
-        android:hint="Enter Invitation Code (example: P6MQ7R)"
-        android:textColorHint="@color/colorPrimary"
-        android:padding="12dp"
+        android:textSize="16sp"
+        android:background="@drawable/rounded_rectangle_holo"
+        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        android:hint="Circle Code (example: k7nOyD59Sm42yaJQpxFp)"
+        android:textColorHint="#878484"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewEnterCode"/>
 

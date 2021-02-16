@@ -12,6 +12,16 @@
         android:layout_height="wrap_content"
         android:padding="8dp">
 
+        <ImageView
+            android:id="@+id/imageViewUserIamge"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:src="@drawable/dummie_user"
+            />
+
         <TextView
             android:id="@+id/textViewMemberName"
             android:layout_width="0dp"
@@ -21,9 +31,24 @@
             android:textColor="@color/colorAccent"
             android:singleLine="true"
             android:ellipsize="end"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toEndOf="@id/imageViewUserIamge"
+            app:layout_constraintTop_toTopOf="@id/imageViewUserIamge"
+            app:layout_constraintBottom_toBottomOf="@id/imageViewUserIamge"
+            app:layout_constraintEnd_toStartOf="@id/imageViewCallUser"
+            android:layout_marginLeft="10dp"
+            />
+
+        <ImageView
+            android:id="@+id/imageViewCallUser"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_call"
+            android:layout_margin="5dp"
+            app:layout_constraintTop_toTopOf="@id/imageViewUserIamge"
+            app:layout_constraintBottom_toBottomOf="@id/imageViewUserIamge"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@color/colorPrimary" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

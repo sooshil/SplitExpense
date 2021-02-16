@@ -12,13 +12,16 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import com.sukajee.splitexpense.DrawerLocker
 import com.sukajee.splitexpense.R
 import com.sukajee.splitexpense.data.User
 import kotlinx.android.synthetic.main.fragment_registration.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -27,8 +30,7 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
     val registrationViewModel: RegistrationViewModel by viewModels()
 
     private lateinit var firebaseAuth: FirebaseAuth
-    private var databaseReference: DatabaseReference? = null
-    private var database: FirebaseDatabase? = null
+    private lateinit var firestore: FirebaseFirestore
     private lateinit var firstNameValue: String
     private lateinit var lastNameValue: String
     private lateinit var emailValue: String
@@ -46,28 +48,20 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
         super.onViewCreated(view, savedInstanceState)
 
         firebaseAuth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance()
-        databaseReference = database?.reference!!.child("users")
+        firestore = FirebaseFirestore.getInstance()
 
         (activity as DrawerLocker?)!!.lockDrawer()
 
         buttonRegister.setOnClickListener {
+            progressBarCircular.visibility = View.VISIBLE
             if(SystemClock.elapsedRealtime() - lastClickTime < 5000) {
                 return@setOnClickListener
             }
             lastClickTime = SystemClock.elapsedRealtime()
 
-            progressBarCircular.isVisible = true
-            firstNameValue = editTextFirstName.text.toString().trim()
-            lastNameValue = editTextLastName.text.toString().trim()
-            emailValue = editTextEmail.text.toString().trim()
-            phoneValue = editTextPhone.text.toString().trim()
-            passwordValue = editTextPassword.text.toString().trim()
-            confirmPasswordValue = editTextConfirmPassword.text.toString().trim()
-            circleCode = ""
-
-            registerUser(linearLayoutPasswordRequirements)
-
+            CoroutineScope(Dispatchers.Main).launch {
+                registerUser()
+            }
         }
 
         buttonLogin.setOnClickListener {
@@ -82,41 +76,53 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
         setHasOptionsMenu(true)
     }
 
-    private fun registerUser(linearLayoutPasswordRequirements: LinearLayout) {
+    private fun registerUser() {
+        firstNameValue = editTextFirstName.text.toString().trim()
+        lastNameValue = editTextLastName.text.toString().trim()
+        emailValue = editTextEmail.text.toString().trim()
+        phoneValue = editTextPhone.text.toString().trim()
+        passwordValue = editTextPassword.text.toString().trim()
+        confirmPasswordValue = editTextConfirmPassword.text.toString().trim()
+        circleCode = "None"
+
         if (!anyEmptyFields()) {
             if (isValidEmail(emailValue)) {
                 if (isGoodPhoneLength()) {
                     if (isPassAndConfirmPassMatching()) {
                         if (isValidPassword(passwordValue)) {
                             firebaseAuth.createUserWithEmailAndPassword(emailValue, passwordValue)
-                                    .addOnCompleteListener {
-                                        if (it.isSuccessful) {
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
                                             Log.e(TAG, "Registration Successful")
-                                            val user = User(firstNameValue, lastNameValue,emailValue, phoneValue, circleCode)
-                                            databaseReference?.child(firebaseAuth.currentUser!!.uid)?.setValue(user)
+                                            val user = User(firebaseAuth.currentUser!!.uid, firstNameValue, lastNameValue, emailValue, phoneValue, circleCode!!, 0.0F, 0.0F,"", 0.0F, false)
+                                            firestore.collection("users").document(firebaseAuth.currentUser!!.uid).set(user)
+                                            Snackbar.make(requireView(),"Registration Successful. Please Login.",Snackbar.LENGTH_LONG)
+                                                    .setAction("DISMISS", null)
+                                                    .show()
 
-                                            makeText(requireContext(), "Registration Successful", Toast.LENGTH_SHORT).show()
-                                            progressBarCircular.isVisible = false
+                                            progressBarCircular.visibility = View.INVISIBLE
                                             val action = RegistrationFragmentDirections.actionRegistrationFragmentToLoginFragment()
                                             findNavController().navigate(action)
                                         } else {
                                             Log.e(TAG, "Registration Unsuccessful")
-                                            progressBarCircular.isVisible = false
-                                            makeText(requireContext(), "Registration Failed, Please try again", Toast.LENGTH_SHORT).show();
+                                            progressBarCircular.visibility = View.INVISIBLE
+                                            Snackbar.make(requireView(),"Registration Failed, Please try again", Snackbar.LENGTH_SHORT)
+                                                    .setAction("DISMISS", null)
+                                                    .show()
                                         }
                                     }
-                                    .addOnFailureListener {
-                                        Log.e("TAG", it.toString())
-                                        progressBarCircular.isVisible = false
+                                    .addOnFailureListener { exception ->
+                                        Log.e(TAG, exception.toString())
+                                        progressBarCircular.visibility = View.GONE
                                     }
 
                         } else {
                             linearLayoutPasswordRequirements.visibility = View.VISIBLE
-                            //clearPasswordFields()
+                            clearPasswordFields()
                             makeText(requireContext(), R.string.password_is_not_valid, Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        //clearPasswordFields()
+                        clearPasswordFields()
                         makeText(requireContext(), R.string.password_doesnt_match, Toast.LENGTH_SHORT).show()
                     }
                 } else {
@@ -144,8 +150,8 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
     }
 
     fun clearPasswordFields() {
-//        editTextPassword.setText("")
-//        editTextConfirmPassword.setText("")
+        editTextPassword.setText("")
+        editTextConfirmPassword.setText("")
     }
 
     fun anyEmptyFields(): Boolean {
