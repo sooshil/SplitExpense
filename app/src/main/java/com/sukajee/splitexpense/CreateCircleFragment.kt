@@ -79,7 +79,7 @@ class CreateCircleFragment : Fragment(R.layout.fragment_create_circle) {
                                     userRef.update("circleCode", circleCodeRef.id)
                                     userRef.update("circleHead", true)
                                     textViewCircleCode.text = circleCodeRef.id
-                                    userToPass = User("", user!!.firstName, user!!.lastName, "", "", circleCode, 0.0F, 0.0F, System.currentTimeMillis().toString(), 0.0F, false)
+                                    userToPass = User("", user!!.firstName, user!!.lastName, "", "", circleCode, 0.0F, 0.0F, System.currentTimeMillis().toString(),"", 0.0F, false)
                                     Snackbar.make(requireView(), "Circle code created successfully.", Snackbar.LENGTH_LONG)
                                             .setAction("DISMISS", null)
                                             .show()

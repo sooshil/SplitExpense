@@ -218,4 +218,15 @@
             android:defaultValue="false" />
     </fragment>
     <action android:id="@+id/action_global_settledResultFragment" app:destination="@id/settledResultFragment" />
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="com.sukajee.splitexpense.ui.profile.UserProfileFragment"
+        android:label="fragment_user_profile"
+        tools:layout="@layout/fragment_user_profile" />
+    <action android:id="@+id/action_global_userProfileFragment" app:destination="@id/userProfileFragment" />
+    <fragment
+        android:id="@+id/oldSettlementsDateListsFragment"
+        android:name="com.sukajee.splitexpense.OldSettlementsDateListsFragment"
+        android:label="fragment_old_settlements_date_lists"
+        tools:layout="@layout/fragment_old_settlements_date_lists" />
 </navigation>

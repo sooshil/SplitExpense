@@ -32,7 +32,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
-    private lateinit var buttonEditPhoto: Button
     private lateinit var imageViewUserPic: ImageView
 
     companion object {
@@ -65,25 +64,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         navigationView.setNavigationItemSelectedListener(this@MainActivity)
 
-        buttonEditPhoto = navigationView.getHeaderView(0).findViewById(R.id.buttonEditPhoto)
         imageViewUserPic = navigationView.getHeaderView(0).findViewById(R.id.imageViewUserPic)
-        buttonEditPhoto.setOnClickListener {
-            val intentGallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            startActivityForResult(intentGallery, PICK_IMAGE)
-        }
+        //update userimage with glide
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
-            val imageUri: Uri? = data?.data
-            Glide.with(this).load(imageUri).into(imageViewUserPic)
-        }
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
+//            val imageUri: Uri? = data?.data
+//            Glide.with(this).load(imageUri).into(imageViewUserPic)
+//        }
+//    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.nav_profile) {
+        if (item.itemId == R.id.nav_home) {
             navController.navigate(R.id.profileFragment)
+            Objects.requireNonNull(supportActionBar)?.title = "Home"
+        } else if (item.itemId == R.id.nav_profile) {
+            navController.navigate(R.id.userProfileFragment)
             Objects.requireNonNull(supportActionBar)?.title = "Profile"
         } else if (item.itemId == R.id.nav_settle) {
             navController.navigate(R.id.doSettlementFragment)
@@ -91,8 +89,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } else if (item.itemId == R.id.nav_logout) {
             navController.navigate(R.id.logoutFragment)
             Objects.requireNonNull(supportActionBar)?.title = "Logout"
+        } else if (item.itemId == R.id.nav_old_settlements) {
+            navController.navigate(R.id.oldSettlementsDateListsFragment)
+            Objects.requireNonNull(supportActionBar)?.title = "Settlements"
         } else if (item.itemId == R.id.nav_leave_circle) {
-            Toast.makeText(this, "You clicked Share", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "You clicked Leave Circle", Toast.LENGTH_SHORT).show()
         }
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
@@ -138,5 +139,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         //actionBar?.setDisplayHomeAsUpEnabled(true)
     }
+
 
 }

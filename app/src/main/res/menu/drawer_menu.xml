@@ -6,6 +6,11 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home"
+            android:title="Home" />
+
+        <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_profile"
             android:title="Profile" />
@@ -13,7 +18,12 @@
         <item
             android:id="@+id/nav_settle"
             android:icon="@drawable/ic_settle"
-            android:title="Settle" />
+            android:title="Settlement" />
+
+        <item
+            android:id="@+id/nav_old_settlements"
+            android:icon="@drawable/ic_settle"
+            android:title="Old Settlements" />
 
     </group>
 

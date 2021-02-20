@@ -94,7 +94,7 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
                                     .addOnCompleteListener { task ->
                                         if (task.isSuccessful) {
                                             Log.e(TAG, "Registration Successful")
-                                            val user = User(firebaseAuth.currentUser!!.uid, firstNameValue, lastNameValue, emailValue, phoneValue, circleCode!!, 0.0F, 0.0F,"", 0.0F, false)
+                                            val user = User(firebaseAuth.currentUser!!.uid, firstNameValue, lastNameValue, emailValue, phoneValue, circleCode!!, 0.0F, 0.0F,"", "", 0.0F, false)
                                             firestore.collection("users").document(firebaseAuth.currentUser!!.uid).set(user)
                                             Snackbar.make(requireView(),"Registration Successful. Please Login.",Snackbar.LENGTH_LONG)
                                                     .setAction("DISMISS", null)

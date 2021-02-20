@@ -1,7 +1,5 @@
 package com.sukajee.splitexpense
 
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
@@ -9,9 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,16 +15,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import com.robinhood.ticker.TickerView
 import com.sukajee.splitexpense.data.User
 import com.sukajee.splitexpense.data.UsersContribution
 import com.sukajee.splitexpense.ui.profile.AllUserContributionsAdapter
-import com.sukajee.splitexpense.ui.profile.ProfileFragment
 import com.sukajee.splitexpense.ui.profile.ProfileFragmentDirections
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.ArrayList
 import kotlin.properties.Delegates
 
 class DoSettlementFragment : Fragment(R.layout.fragment_do_settlement), AllUserContributionsAdapter.OnItemCliclListener {

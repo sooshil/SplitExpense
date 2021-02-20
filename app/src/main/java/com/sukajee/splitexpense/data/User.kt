@@ -16,6 +16,7 @@ class User(
         var totalContribution: Float = 0.0F,
         var totalLifeTimeContribution: Float = 0.0F,
         var lastSettlementDate: String = "",
+        var imageUrl: String = "",
         var circleTotal: Float = 0.0F,
         var circleHead: Boolean = false
 ) : Parcelable {
@@ -28,6 +29,7 @@ class User(
             parcel.readString().toString(),
             parcel.readFloat(),
             parcel.readFloat(),
+            parcel.readString().toString(),
             parcel.readString().toString(),
             parcel.readFloat(),
             parcel.readByte() != 0.toByte()) {
@@ -43,6 +45,7 @@ class User(
         parcel.writeFloat(totalContribution)
         parcel.writeFloat(totalLifeTimeContribution)
         parcel.writeString(lastSettlementDate)
+        parcel.writeString(imageUrl)
         parcel.writeFloat(circleTotal)
         parcel.writeByte(if (circleHead) 1 else 0)
     }

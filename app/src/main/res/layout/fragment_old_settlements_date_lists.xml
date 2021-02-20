@@ -4,25 +4,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/backgroundGray">
+    android:background="@color/backgroundGray"
+    tools:context="com.sukajee.splitexpense.OldSettlementsDateListsFragment">
 
     <TextView
         android:id="@+id/textViewOldSettlements"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Old Settlements"
+        android:text="Previous Settlements"
         android:textSize="20sp"
         android:textColor="@color/colorAccent"
-        android:padding="16dp"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/textViewClickToSeeDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Click date to see details"
+        android:textSize="12sp"
+        android:paddingHorizontal="16dp"
+        android:layout_marginBottom="10dp"
+        android:textColor="#8F8F8F"
+        app:layout_constraintStart_toStartOf="@id/textViewOldSettlements"
+        app:layout_constraintTop_toBottomOf="@id/textViewOldSettlements"
         />
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/textViewOldSettlements"
+        app:layout_constraintTop_toBottomOf="@id/textViewClickToSeeDetails"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:padding="16dp"
         tools:listitem="@layout/old_settlements_date_row"/>
 
